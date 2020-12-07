@@ -16,7 +16,7 @@ public class ClientChat extends JFrame {
     private JTextArea chatText;
     private JTextField nicknameText;
     private JButton changeNickButton;
-    // Ссылка на контроллер
+
     private ClientController controller;
     private String newNickLengthErrorMessage = "Неверное или слишком короткое имя пользователя.";
 
@@ -36,18 +36,12 @@ public class ClientChat extends JFrame {
         });
     }
 
-    /**
-     * Добавление действий на кнопку и поле ввода текста
-     */
     private void addListeners() {
         sendButton.addActionListener(e -> ClientChat.this.sendMessage());
         messageTextField.addActionListener(e -> sendMessage());
         changeNickButton.addActionListener(e -> ClientChat.this.sendChangeNicknameMessage());
     }
 
-    /**
-     * отправляет сообщение о смене никнейма
-     */
     private void sendChangeNicknameMessage() {
         String newNickname = nicknameText.getText().trim();
         if (newNickname.isEmpty()) {
@@ -61,9 +55,6 @@ public class ClientChat extends JFrame {
         nicknameText.setText(null);
     }
 
-    /**
-     * Метод отправки сообщения из окна чата
-     */
     private void sendMessage() {
         String message = messageTextField.getText().trim();
         if (message.isEmpty()) {
@@ -85,21 +76,11 @@ public class ClientChat extends JFrame {
         messageTextField.setText(null);
     }
 
-    /**
-     * Метод обновления окна чата в отдельном потоке
-     *
-     * @param message - текст полученного сообщения
-     */
     public void appendMessage(String message) {
         controller.getChatHistory().writeHistory(message);
         updateChatText(message);
     }
 
-    /**
-     * Обновляет текстовую область чата
-     *
-     * @param message - сообщение
-     */
     public void updateChatText(String message) {
         SwingUtilities.invokeLater(() -> {
             chatText.append(message + System.lineSeparator());
@@ -107,11 +88,6 @@ public class ClientChat extends JFrame {
         });
     }
 
-    /**
-     * Отображает предупреждающее окно
-     *
-     * @param message - описание ошибки
-     */
     public void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Ошибка!", JOptionPane.ERROR_MESSAGE);
     }
@@ -120,11 +96,6 @@ public class ClientChat extends JFrame {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    /**
-     * Обновление списка контактов
-     *
-     * @param users - на вход коллекция контактов
-     */
     public void updateUsers(List<String> users) {
         SwingUtilities.invokeLater(() -> {
             DefaultListModel<String> model = new DefaultListModel<>();
@@ -133,11 +104,6 @@ public class ClientChat extends JFrame {
         });
     }
 
-    /**
-     * Обновляет заголовок окна чата
-     *
-     * @param nickname String - принимает ник пользователя
-     */
     public void updateTitle(String nickname) {
         SwingUtilities.invokeLater(() -> ClientChat.this.setTitle(nickname));
     }

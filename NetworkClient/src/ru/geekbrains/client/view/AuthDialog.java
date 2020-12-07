@@ -38,9 +38,6 @@ public class AuthDialog extends JFrame {
         });
     }
 
-    /**
-     * Действие на кнопку Ok
-     */
     private void onOK() {
         // Получаем строки с логином и паролем из полей ввода
         String login = loginText.getText().trim();
@@ -53,34 +50,19 @@ public class AuthDialog extends JFrame {
         }
     }
 
-    /**
-     * Действие на кнопку Cancel
-     */
     private void onCancel() {
         System.exit(0);
     }
 
-    /**
-     * Отображение окна с описанием ошибки
-     * @param errorMessage - текст ошибки
-     */
     public void showError(String errorMessage) {
         JOptionPane.showMessageDialog(this, errorMessage, "Ошибка!", JOptionPane.ERROR_MESSAGE);
     }
 
-    /**
-     * Отображает ошибку и закрывает клиент
-     * @param errorMessage - текст ошибки
-     */
     public void showErrorAndClose(String errorMessage) {
         showError(errorMessage);
         onCancel();
     }
 
-    /**
-     * Таймер времени авторизации клиента
-     * @param seconds - остаток времени в секундах
-     */
     public void updateTimeOutAuthLabel(String seconds) {
         SwingUtilities.invokeLater(() -> {
             if (!timeOutAuth.isEnabled()) {

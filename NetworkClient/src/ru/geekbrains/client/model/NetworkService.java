@@ -31,12 +31,6 @@ public class NetworkService {
         this.port = port;
     }
 
-    /**
-     * Создание подключения клиента к серверу
-     *
-     * @param controller - ссылка на контроллер клиента
-     * @throws IOException - пробрасываем ошибку подключения
-     */
     public void connect(ClientController controller) throws IOException {
         this.controller = controller;
         socket = new Socket(host, port);
@@ -45,9 +39,6 @@ public class NetworkService {
         runReadThread();
     }
 
-    /**
-     * Создание потока для чтения сообщений от сервера
-     */
     private void runReadThread() {
         new Thread(() -> {
             while (true) {
@@ -132,37 +123,18 @@ public class NetworkService {
         }).start();
     }
 
-    /**
-     * Отправка сообщения клиентом
-     *
-     * @param command - объект с текстовой информацией
-     * @throws IOException - пробрасываем исключение при отправке текстового сообщения
-     */
     public void sendCommand(Command command) throws IOException {
         out.writeObject(command);
     }
 
-    /**
-     * Задает обработчик сообщений от сервера
-     *
-     * @param messageHandler - обработчик сообщений
-     */
     public void setMessageHandler(MessageHandler messageHandler) {
         this.messageHandler = messageHandler;
     }
 
-    /**
-     * Задает событие, осуществляемое при успешной авторизации
-     *
-     * @param successfulAuthEvent - событие
-     */
     public void setSuccessfulAuthEvent(AuthEvent successfulAuthEvent) {
         this.successfulAuthEvent = successfulAuthEvent;
     }
 
-    /**
-     * Закрытие подключения к серверу
-     */
     public void close() {
         try {
             socket.close();

@@ -26,9 +26,6 @@ public class ChatHistory {
         startWriteChatHistory();
     }
 
-    /**
-     * Запускает выходной поток для записи в файл
-     */
     public void startWriteChatHistory() {
         try {
             fileWriter = new BufferedWriter(new FileWriter(historyFile, true));
@@ -38,11 +35,6 @@ public class ChatHistory {
         }
     }
 
-    /**
-     * Записывает историю чата в файл
-     *
-     * @param message - сообщение для записи
-     */
     public void writeHistory(String message) {
         try {
             fileWriter.write(message);
@@ -54,9 +46,6 @@ public class ChatHistory {
         }
     }
 
-    /**
-     * Считывает количество строк с конца файла, заданное в COUNT_STRINGS
-     */
     public void readHistory() {
         try {
             // если файл пустой или отсутствует, выходим
@@ -79,9 +68,6 @@ public class ChatHistory {
         }
     }
 
-    /**
-     * Останавливает поток записи
-     */
     public void stopWriteChatHistory() {
         try {
             if (fileWriter != null) fileWriter.close();
