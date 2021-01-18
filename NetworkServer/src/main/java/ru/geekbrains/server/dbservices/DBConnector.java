@@ -1,18 +1,20 @@
 package ru.geekbrains.server.dbservices;
 
-import org.apache.logging.log4j.Logger;
 import ru.geekbrains.server.NetworkServer;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DBConnector {
 
-    private final String dbDriver = "com.mysql.cj.jdbc.Driver";
-    private final String dbUrl = "jdbc:mysql://localhost:3306/";
-    private final String dbUsername = "root";
-    private final String dbPassword = "gtr120519";
-    private final String dbName = "chat_users";
+    private static final String dbDriver = "com.mysql.cj.jdbc.Driver";
+    private static final String dbUrl = "jdbc:mysql://localhost:3306/";
+    private static final String dbUsername = "root";
+    private static final String dbPassword = "gtr120519";
+    private static final String dbName = "chat_users";
 
-    private final String timeZoneConfiguration = "?serverTimezone=Europe/Moscow&useSSL=false";
+    private static final String timeZoneConfiguration = "?serverTimezone=Europe/Moscow&useSSL=false";
 
     public DBConnector() {
         try {

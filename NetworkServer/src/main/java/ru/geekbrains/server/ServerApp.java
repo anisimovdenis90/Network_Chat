@@ -5,15 +5,10 @@ public class ServerApp {
     private static final int DEFAULT_PORT = 8189;
 
     public static void main(String[] args) {
-        int port = getServerPort(args);
+        final int port = getServerPort(args);
         new NetworkServer(port, true).start();
     }
 
-    /**
-     * Метод получения номера порта из аргумента
-     * @param args - аргумент
-     * @return int - номер порта
-     */
     private static int getServerPort(String[] args) {
         int port = DEFAULT_PORT;
         if (args.length == 1) {

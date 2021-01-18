@@ -3,13 +3,16 @@ package ru.geekbrains.server.dbservices.auth;
 import ru.geekbrains.server.NetworkServer;
 import ru.geekbrains.server.dbservices.DBConnector;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class AuthService implements Authenticator {
 
-    private final DBConnector dbConnector;
+    private DBConnector dbConnector;
     private Connection connection;
-    private Statement statement;
+    private PreparedStatement preparedStatement;
     private ResultSet resultSet;
 
     public AuthService(ru.geekbrains.server.dbservices.DBConnector DBConnector) {
@@ -17,20 +20,17 @@ public class AuthService implements Authenticator {
         NetworkServer.getInfoLogger().info("Сервис авторизации успешно запущен");
     }
 
-    /**
-     * Возвращает никнейм и ID пользователя при авторизации
-     *
-     * @param login    - логин, введенный пользователем
-     * @param password - пароль, введенный пользователем
-     * @return String  - никнейм пользователя
-     */
     @Override
-    public synchronized String[] getUserNickAndIDByLoginAndPassword(String login, String password) {
+    public String[] getUserNickAndIDByLoginAndPassword(String login, String password) {
         final String[] userNickAndID = new String[2];
         connection = dbConnector.getConnection();
         try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(String.format("SELECT id, nickname FROM users WHERE login = '%s' AND password = '%s'", login, password));
+            preparedStatement = connection.prepareStatement(
+                    "SELECT id, nickname FROM users WHERE login = ? AND password = ?"
+            );
+            preparedStatement.setString(1, login);
+            preparedStatement.setString(2, password);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 userNickAndID[0] = "id" + resultSet.getString("id");
                 userNickAndID[1] = resultSet.getString("nickname");
@@ -43,24 +43,40 @@ public class AuthService implements Authenticator {
         return userNickAndID;
     }
 
-    /**
-     * Изменяет никнейм пользователя в базе данных
-     *
-     * @param oldNickname - старый никнейм пользователя
-     * @param newNickname - новый никнейм
-     * @return int - кол-во измененных строк
-     */
-    @Override
-    public synchronized int changeNickname(String oldNickname, String newNickname) {
-        int countChanges = 0;
+    public int signUpUser(String login, String password, String nickname) {
         connection = dbConnector.getConnection();
         try {
-            statement = connection.createStatement();
-            countChanges = statement.executeUpdate(String.format("UPDATE users SET nickname = '%s' WHERE nickname = '%s'", newNickname, oldNickname));
+            preparedStatement = connection.prepareStatement(
+                    "INSERT INTO users (nickname, login, password) VALUES (?, ?, ?)"
+            );
+            preparedStatement.setString(1, nickname);
+            preparedStatement.setString(2, login);
+            preparedStatement.setString(3, password);
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            NetworkServer.getFatalLogger().fatal("Ошибка регистрации пользователя!", e);
+        } finally {
+            close();
+        }
+        return 0;
+    }
+
+    @Override
+    public int changeNickname(String oldNickname, String newNickname) {
+        connection = dbConnector.getConnection();
+        try {
+            preparedStatement = connection.prepareStatement(
+                    "UPDATE users SET nickname = ? WHERE nickname = ?"
+            );
+            preparedStatement.setString(1, newNickname);
+            preparedStatement.setString(2, oldNickname);
+            return preparedStatement.executeUpdate();
         } catch (SQLException e) {
             NetworkServer.getFatalLogger().fatal("Ошибка изменения данных в базе", e);
+        } finally {
+            close();
         }
-        return countChanges;
+        return 0;
     }
 
     public void close() {
@@ -68,8 +84,8 @@ public class AuthService implements Authenticator {
             if (resultSet != null) {
                 resultSet.close();
             }
-            if (statement != null) {
-                statement.close();
+            if (preparedStatement != null) {
+                preparedStatement.close();
             }
         } catch (SQLException e) {
             NetworkServer.getFatalLogger().fatal("Ошибка завершения работы с базой данных", e);

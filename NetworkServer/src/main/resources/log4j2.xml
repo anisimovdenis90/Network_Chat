@@ -11,9 +11,6 @@
         </Console>
     </Appenders>
 
-<!--Используется 2 логера: 1 - корневой, через него проходят все логи, вывод в консоль;
-2 - уровень INFO (ограничение с низу), печатает в файл, можно отключить дублирование записей через корневой логер
-(параметр additivity в false)-->
     <Loggers>
         <Logger name="ru.geekbrains.server.NetworkServer" level="INFO" additivity="true">
             <AppenderRef ref= "FILE"/>

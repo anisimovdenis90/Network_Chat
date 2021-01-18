@@ -3,7 +3,10 @@ package ru.geekbrains.server.dbservices.censor;
 import ru.geekbrains.server.NetworkServer;
 import ru.geekbrains.server.dbservices.DBConnector;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CensorService implements Censor {
 
@@ -23,14 +26,6 @@ public class CensorService implements Censor {
         NetworkServer.getInfoLogger().info("Сервис цензуры запущен");
     }
 
-
-    /**
-     * Проверяет присутствие слова в переданном сообщении
-     * в базе данных цензурных слов
-     *
-     * @param message - переданное на проверку сообщение
-     * @return String - обработанное сообщение
-     */
     @Override
     public String messageCensor(String message) {
         connection = dbConnector.getConnection();
@@ -49,13 +44,6 @@ public class CensorService implements Censor {
         return message;
     }
 
-    /**
-     * Проверяет наличие переданного слова в базе данных,
-     * возвращает true, если есть и false, если нет.
-     *
-     * @param wordsToCheck - слово на проверку
-     * @return boolean - true, если слово есть в базе
-     */
     private boolean findWordInDB(String wordsToCheck) {
         try {
             preparedStatement = connection.prepareStatement(SQL);
