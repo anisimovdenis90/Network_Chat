@@ -9,6 +9,8 @@ import java.io.IOException;
 
 public class AuthDialog extends JFrame {
 
+    private final ClientController controller;
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -16,7 +18,6 @@ public class AuthDialog extends JFrame {
     private JPasswordField passwordText;
     private JLabel timeOutAuth;
 
-    private ClientController controller;
 
     public AuthDialog(ClientController controller) {
         this.controller = controller;
@@ -30,7 +31,6 @@ public class AuthDialog extends JFrame {
         buttonCancel.addActionListener(e -> onCancel());
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        // Действие при закрытии окна
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onCancel();
@@ -39,11 +39,9 @@ public class AuthDialog extends JFrame {
     }
 
     private void onOK() {
-        // Получаем строки с логином и паролем из полей ввода
-        String login = loginText.getText().trim();
-        String pass = new String(passwordText.getPassword()).trim();
+        final String login = loginText.getText().trim();
+        final String pass = new String(passwordText.getPassword()).trim();
         try {
-            // отправляем сообщение авторизации серверу
             controller.sendAuthMessage(login, pass);
         } catch (IOException e) {
             showError("Ошибка при попытке аутентификации");

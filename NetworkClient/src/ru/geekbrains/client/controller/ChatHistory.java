@@ -14,14 +14,14 @@ public class ChatHistory {
     private static final String ORIGIN_NAME = "history_";
     private static final String FILE_EXTENSION = ".txt";
 
-    private ClientController controller;
+    private final ClientController controller;
+    private final String historyFileName;
+    private final File historyFile;
     private BufferedWriter fileWriter;
-    private String historyFileName;
-    private File historyFile;
 
     public ChatHistory(ClientController controller, String userID) {
         this.controller = controller;
-        historyFileName = ORIGIN_NAME + userID + FILE_EXTENSION;
+        this.historyFileName = ORIGIN_NAME + userID + FILE_EXTENSION;
         this.historyFile = new File(historyFileName);
         startWriteChatHistory();
     }
@@ -48,17 +48,15 @@ public class ChatHistory {
 
     public void readHistory() {
         try {
-            // если файл пустой или отсутствует, выходим
             if (!historyFile.exists() || historyFile.length() == 0) {
                 return;
             }
-            // Получаем массив строк из файла истории, проверяем размерность
-            List<String> stringsOfHistory = Files.readAllLines(Paths.get(historyFileName));
+            final List<String> stringsOfHistory = Files.readAllLines(Paths.get(historyFileName));
             int i = 0;
             if (stringsOfHistory.size() > COUNT_STRINGS) {
                 i = stringsOfHistory.size() - COUNT_STRINGS;
             }
-            // Выводим на печать строки из файла истории
+
             for (int j = i; j < stringsOfHistory.size(); j++) {
                 controller.getClientChat().updateChatText(stringsOfHistory.get(j));
             }

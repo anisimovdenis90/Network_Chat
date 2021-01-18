@@ -19,9 +19,7 @@ public class NetworkService {
     private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-
     private ClientController controller;
-
     private MessageHandler messageHandler;
     private AuthEvent successfulAuthEvent;
     private String nickname;
@@ -43,22 +41,20 @@ public class NetworkService {
         new Thread(() -> {
             while (true) {
                 try {
-                    Command command = (Command) in.readObject();
+                    final Command command = (Command) in.readObject();
                     switch (command.getType()) {
                         case AUTH: {
-                            // При успешной авторизации принимаем никнейм текущего контакта от сервера
-                            AuthCommand commandData = (AuthCommand) command.getData();
+                            final AuthCommand commandData = (AuthCommand) command.getData();
                             nickname = commandData.getUsername();
-                            String userID = commandData.getUserID();
-                            // Передаем никнейм контроллеру
+                            final String userID = commandData.getUserID();
                             successfulAuthEvent.authIsSuccessful(nickname, userID);
                             break;
                         }
                         case MESSAGE: {
-                            MessageCommand commandData = (MessageCommand) command.getData();
+                            final MessageCommand commandData = (MessageCommand) command.getData();
                             if (messageHandler != null) {
+                                final String username = commandData.getUsername();
                                 String message = commandData.getMessage();
-                                String username = commandData.getUsername();
                                 if (username != null) {
                                     message = username + ": " + message;
                                 }
@@ -67,10 +63,10 @@ public class NetworkService {
                             break;
                         }
                         case PRIVATE_MESSAGE: {
-                            PrivateMessageCommand commandData = (PrivateMessageCommand) command.getData();
+                            final PrivateMessageCommand commandData = (PrivateMessageCommand) command.getData();
                             if (messageHandler != null) {
+                                final String username = commandData.getSender();
                                 String message = commandData.getMessage();
-                                String username = commandData.getSender();
                                 if (username != null) {
                                     message = username + " лично вам: " + message;
                                 }
@@ -79,31 +75,31 @@ public class NetworkService {
                             break;
                         }
                         case TIMEOUT_MESSAGE: {
-                            BroadcastMessageCommand commandData = (BroadcastMessageCommand) command.getData();
+                            final BroadcastMessageCommand commandData = (BroadcastMessageCommand) command.getData();
                             controller.updateTimeoutLabel(commandData.getMessage());
                             break;
                         }
                         case TIMEOUT_AUTH_ERROR: {
-                            ErrorCommand commandData = (ErrorCommand) command.getData();
+                            final ErrorCommand commandData = (ErrorCommand) command.getData();
                             controller.showErrorAndClose(commandData.getErrorMessage());
                             break;
                         }
                         case ERROR:
                         case AUTH_ERROR: {
-                            ErrorCommand commandData = (ErrorCommand) command.getData();
+                            final ErrorCommand commandData = (ErrorCommand) command.getData();
                             controller.showErrorMessage(commandData.getErrorMessage());
                             break;
                         }
                         case UPDATE_USERS_LIST: {
-                            UpdateUsersListCommand commandData = (UpdateUsersListCommand) command.getData();
-                            List<String> users = commandData.getUsers();
+                            final UpdateUsersListCommand commandData = (UpdateUsersListCommand) command.getData();
+                            final List<String> users = commandData.getUsers();
                             controller.updateUsersList(users);
                             break;
                         }
                         case CHANGE_NICKNAME_MESSAGE: {
-                            MessageCommand commandData = (MessageCommand) command.getData();
-                            String username = commandData.getUsername();
-                            String message = commandData.getMessage();
+                            final MessageCommand commandData = (MessageCommand) command.getData();
+                            final String username = commandData.getUsername();
+                            final String message = commandData.getMessage();
                             nickname = username;
                             controller.setUserName(nickname);
                             controller.showMessage(message);

@@ -53,33 +53,27 @@ public class ClientController {
     }
 
     private void runAuthProcess() {
-        // Задаем никнейм и открываем окно чата при успешной авторизации
         networkService.setSuccessfulAuthEvent(new AuthEvent() {
             @Override
             public void authIsSuccessful(String nickname, String userID) {
-                ClientController.this.setUserName(nickname);
-                // Задаем заголовок окна чата
+                setUserName(nickname);
                 chatHistory = new ChatHistory(ClientController.this, userID);
                 chatHistory.readHistory();
                 clientChat.setTitle(nickname);
                 ClientController.this.openChat();
             }
         });
-        // Отображаем окно ввода данных для авторизации
         authDialog.setVisible(true);
     }
 
     private void openChat() {
-        // Убираем окно авторизации
         authDialog.dispose();
-        // Задаем обработчик полученных сообщений от сервера
         networkService.setMessageHandler(new MessageHandler() {
             @Override
             public void handle(String message) {
                 clientChat.appendMessage(message);
             }
         });
-        // Запускаем окно чата
         clientChat.setVisible(true);
     }
 
@@ -122,9 +116,9 @@ public class ClientController {
     }
 
     public void shutdown() {
-        // Останавливаем поток чтения из файла истории
-        chatHistory.stopWriteChatHistory();
-        // Закрывается соединение
+        if (chatHistory != null) {
+            chatHistory.stopWriteChatHistory();
+        }
         networkService.close();
     }
 
@@ -151,9 +145,7 @@ public class ClientController {
     }
 
     public void updateUsersList(List<String> users) {
-        // Удаляем из списка текущего пользователя
         users.remove(nickname);
-        // Добавляем строку 'отправить всем'
         users.add(0, "All");
         clientChat.updateUsers(users);
     }

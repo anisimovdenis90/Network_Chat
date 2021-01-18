@@ -9,6 +9,8 @@ import java.util.List;
 
 public class ClientChat extends JFrame {
 
+    private final ClientController controller;
+
     private JPanel mainPanel;
     private JList<String> usersList;
     private JTextField messageTextField;
@@ -17,8 +19,7 @@ public class ClientChat extends JFrame {
     private JTextField nicknameText;
     private JButton changeNickButton;
 
-    private ClientController controller;
-    private String newNickLengthErrorMessage = "Неверное или слишком короткое имя пользователя.";
+    private static final String newNickLengthErrorMessage = "Неверное или слишком короткое имя пользователя.";
 
     public ClientChat(ClientController controller) {
         this.controller = controller;
@@ -27,7 +28,7 @@ public class ClientChat extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(mainPanel);
         addListeners();
-        // При закрытии окна отключаем клиента от сервера
+
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 controller.sendEndMessage();
@@ -43,7 +44,7 @@ public class ClientChat extends JFrame {
     }
 
     private void sendChangeNicknameMessage() {
-        String newNickname = nicknameText.getText().trim();
+        final String newNickname = nicknameText.getText().trim();
         if (newNickname.isEmpty()) {
             nicknameText.setText(null);
             return;
@@ -56,23 +57,21 @@ public class ClientChat extends JFrame {
     }
 
     private void sendMessage() {
-        String message = messageTextField.getText().trim();
+        final String message = messageTextField.getText().trim();
         if (message.isEmpty()) {
             messageTextField.setText(null);
             return;
         }
-        // Отправка сообщения всем
+
         if (usersList.getSelectedIndex() < 1) {
             appendMessage("Я: " + message);
             controller.sendMessageToAllUsers(message);
-        }
-        // Отправка сообщения выбранному контакту
-        else {
+        } else {
             String username = usersList.getSelectedValue();
             appendMessage(String.format("Я лично %s: %s", username, message));
             controller.sendPrivateMessage(username, message, controller.getUsername());
         }
-        // Очищаем окно ввода текста после отправки сообщения
+
         messageTextField.setText(null);
     }
 
