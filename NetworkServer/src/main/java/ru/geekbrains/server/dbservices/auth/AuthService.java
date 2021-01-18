@@ -15,8 +15,8 @@ public class AuthService implements Authenticator {
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
 
-    public AuthService(ru.geekbrains.server.dbservices.DBConnector DBConnector) {
-        this.dbConnector = DBConnector;
+    public AuthService(DBConnector dbConnector) {
+        this.dbConnector = dbConnector;
         NetworkServer.getInfoLogger().info("Сервис авторизации успешно запущен");
     }
 
